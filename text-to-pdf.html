@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to PDF Converter - SujanTech</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .text-area {
+            width: 100%;
+            min-height: 300px;
+            padding: 20px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .text-area:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .options-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+
+        .options-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .option-section {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .option-section-title {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            padding: 8px 0;
+        }
+        
+        .option-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .option-item input {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+        }
+
+        .option-item label {
+            font-size: 0.9rem;
+            color: #555;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .custom-heading-container {
+            margin-left: 30px;
+            margin-top: 8px;
+            display: none;
+        }
+        
+        .custom-heading-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        
+        .custom-heading-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        }
+
+        .convert-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 30px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .convert-btn:active {
+            transform: translateY(0);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            transition: background 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .preview-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .preview-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .char-count {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 0.8rem;
+            color: #666;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .back-btn {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin-bottom: 20px;
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="goBack()">← Back to Home</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>📝 Text to PDF</h1>
+            <p>Convert your text content into professional PDF documents</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-section">
+                <label class="input-label">Enter Your Text:</label>
+                <div class="input-container">
+                    <textarea 
+                        class="text-area" 
+                        id="textInput" 
+                        placeholder="Type or paste your text here..."
+                        oninput="updateCharCount()"
+                    ></textarea>
+                    <div class="char-count" id="charCount">0 characters</div>
+                </div>
+            </div>
+            
+            <div class="options-section">
+                <div class="options-title">PDF Options</div>
+                <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 12px; margin-bottom: 15px; font-size: 0.9rem; color: #0c4a6e;">
+                    <strong>💪 Guaranteed:</strong> With "Force ALL text on one page" enabled, every single word of your text will appear on one page - no matter how much text you have! Font size will be automatically reduced as needed.
+                </div>
+                
+                <div class="options-grid">
+                    <!-- Document Title Options -->
+                    <div class="option-section">
+                        <div class="option-section-title">📝 Document Title</div>
+                        <div class="option-item">
+                            <input type="radio" id="headingAuto" name="headingType" value="auto" checked>
+                            <label for="headingAuto">Auto: "Text Document"</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" id="headingCustom" name="headingType" value="custom">
+                            <label for="headingCustom">Custom Heading</label>
+                        </div>
+                        <div class="custom-heading-container" id="customHeadingInput">
+                            <input type="text" id="customHeading" class="custom-heading-input" 
+                                   placeholder="Enter your custom heading...">
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" id="headingNone" name="headingType" value="none">
+                            <label for="headingNone">No Heading</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Page Size Options -->
+                    <div class="option-section">
+                        <div class="option-section-title">📐 Page Size</div>
+                        <div class="option-item">
+                            <input type="radio" id="letterSize" name="pageSize" value="letter" checked>
+                            <label for="letterSize">Letter Size (Default)</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" id="a4Size" name="pageSize" value="a4">
+                            <label for="a4Size">A4 Size (Multiple Pages)</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Page Orientation Options -->
+                    <div class="option-section">
+                        <div class="option-section-title">📄 Page Orientation</div>
+                        <div class="option-item">
+                            <input type="radio" id="portrait" name="orientation" value="portrait" checked>
+                            <label for="portrait">Portrait</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" id="landscape" name="orientation" value="landscape">
+                            <label for="landscape">Landscape</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Options -->
+                    <div class="option-section">
+                        <div class="option-section-title">⚙️ Additional Options</div>
+                        <div class="option-item">
+                            <input type="checkbox" id="addTimestamp" checked>
+                            <label for="addTimestamp">Add timestamp</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" id="pageNumbers" checked>
+                            <label for="pageNumbers">Page numbers</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" id="singlePage" checked>
+                            <label for="singlePage">Force ALL text on one page (कितना भी text हो)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="convert-btn" onclick="convertTextToPDF()">
+                🚀 Convert to PDF
+            </button>
+            
+            <div class="preview-section" id="previewSection">
+                <div class="preview-title">✅ PDF Generated Successfully!</div>
+                <p>Your PDF has been created and downloaded automatically.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        function updateCharCount() {
+            const textInput = document.getElementById('textInput');
+            const charCount = document.getElementById('charCount');
+            const count = textInput.value.length;
+            charCount.textContent = `${count} characters`;
+        }
+        
+        // Handle heading type selection
+        document.addEventListener('DOMContentLoaded', function() {
+            const headingRadios = document.querySelectorAll('input[name="headingType"]');
+            const customHeadingInput = document.getElementById('customHeadingInput');
+            
+            headingRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'custom') {
+                        customHeadingInput.style.display = 'block';
+                        document.getElementById('customHeading').focus();
+                    } else {
+                        customHeadingInput.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Handle page size selection interaction
+            const pageSizeRadios = document.querySelectorAll('input[name="pageSize"]');
+            const singlePageCheckbox = document.getElementById('singlePage');
+            
+            pageSizeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'a4') {
+                        // A4 is optimized for multiple pages, suggest turning off single page mode
+                        if (singlePageCheckbox.checked) {
+                            const userConfirm = confirm('A4 size works best with multiple pages. Would you like to disable "Force ALL text on one page" for better formatting?');
+                            if (userConfirm) {
+                                singlePageCheckbox.checked = false;
+                            }
+                        }
+                    }
+                });
+            });
+        });
+
+        function convertTextToPDF() {
+            const text = document.getElementById('textInput').value.trim();
+            
+            if (!text) {
+                alert('Please enter some text to convert!');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            
+            // Get options
+            const orientation = document.querySelector('input[name="orientation"]:checked').value;
+            const pageSize = document.querySelector('input[name="pageSize"]:checked').value;
+            const headingType = document.querySelector('input[name="headingType"]:checked').value;
+            const customHeading = document.getElementById('customHeading').value.trim();
+            const addTimestamp = document.getElementById('addTimestamp').checked;
+            const pageNumbers = document.getElementById('pageNumbers').checked;
+            const singlePage = document.getElementById('singlePage').checked;
+            
+            // Create new PDF with orientation and page size
+            const pdfOptions = {
+                orientation: orientation,
+                unit: 'mm',
+                format: pageSize === 'a4' ? 'a4' : 'letter'
+            };
+            const pdf = new jsPDF(pdfOptions);
+            
+            // Get page dimensions and optimize margins for page size
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            
+            // Use optimized margins for different page sizes
+            const margin = pageSize === 'a4' ? 15 : 20; // Smaller margins for A4
+            const usableWidth = pageWidth - (margin * 2);
+            
+            let currentY = margin;
+            
+            // Add title based on heading type selection
+            if (headingType !== 'none') {
+                pdf.setFontSize(16);
+                pdf.setFont(undefined, 'bold');
+                
+                let titleText = 'Text Document'; // default
+                if (headingType === 'custom' && customHeading) {
+                    titleText = customHeading;
+                }
+                
+                pdf.text(titleText, margin, currentY);
+                currentY += 15;
+            }
+            
+            // Add timestamp if selected
+            if (addTimestamp) {
+                pdf.setFontSize(10);
+                pdf.setFont(undefined, 'normal');
+                pdf.text(`Generated on: ${new Date().toLocaleString()}`, margin, currentY);
+                currentY += 15;
+            }
+            
+            // Calculate available height for text
+            const footerSpace = pageNumbers ? 20 : 10;
+            const availableHeight = pageHeight - currentY - footerSpace;
+            
+            // Optimize font size based on page size
+            let fontSize = pageSize === 'a4' ? 11 : 12; // Slightly smaller font for A4 to fit more content
+            let lines;
+            
+            if (singlePage) {
+                // SINGLE PAGE MODE: Force ALL text to fit on one page no matter what
+                
+                // Start with smaller font size and keep reducing until EVERYTHING fits
+                fontSize = 10; // Start smaller
+                let attempts = 0;
+                const maxAttempts = 200; // Prevent infinite loop
+                
+                do {
+                    pdf.setFontSize(fontSize);
+                    pdf.setFont(undefined, 'normal');
+                    lines = pdf.splitTextToSize(text, usableWidth);
+                    
+                    // Calculate text height with tighter line spacing for more text
+                    const lineHeight = fontSize * 1.1; // Reduced line height to fit more
+                    const totalTextHeight = lines.length * lineHeight;
+                    
+                    if (totalTextHeight <= availableHeight) {
+                        break; // Text fits!
+                    }
+                    
+                    fontSize -= 0.2; // Smaller increments for precise fitting
+                    attempts++;
+                    
+                    // Force fit even with very small font - NO MINIMUM LIMIT
+                    if (fontSize < 2 || attempts >= maxAttempts) {
+                        // Use the smallest possible font and tight spacing
+                        fontSize = Math.max(1, fontSize);
+                        break;
+                    }
+                } while (true);
+                
+                // Add the text with calculated font size
+                pdf.setFontSize(fontSize);
+                pdf.setFont(undefined, 'normal');
+                
+                // Recalculate lines with final font size
+                lines = pdf.splitTextToSize(text, usableWidth);
+                
+                // Add ALL text to PDF with tight spacing to fit everything
+                const lineHeight = fontSize * 1.1; // Tight line height
+                
+                // If still too much text, make line height even smaller
+                let actualLineHeight = lineHeight;
+                const estimatedHeight = lines.length * lineHeight;
+                if (estimatedHeight > availableHeight) {
+                    actualLineHeight = availableHeight / lines.length; // Force fit with calculated spacing
+                }
+                
+                // Add every single line of text
+                for (let i = 0; i < lines.length; i++) {
+                    const y = currentY + (i * actualLineHeight);
+                    
+                    // Force add text even if close to page bottom - NO BREAKING
+                    pdf.text(lines[i], margin, y);
+                }
+                
+            } else {
+                // MULTI-PAGE MODE: Use normal font size and allow text to flow to multiple pages
+                
+                pdf.setFontSize(fontSize);
+                pdf.setFont(undefined, 'normal');
+                lines = pdf.splitTextToSize(text, usableWidth);
+                
+                // Optimize line height based on page size - A4 gets slightly tighter spacing
+                const lineHeight = pageSize === 'a4' ? fontSize * 1.15 : fontSize * 1.2;
+                let currentPageY = currentY;
+                
+                for (let i = 0; i < lines.length; i++) {
+                    // Check if we need a new page
+                    if (currentPageY + lineHeight > pageHeight - footerSpace) {
+                        pdf.addPage();
+                        currentPageY = margin;
+                    }
+                    
+                    pdf.text(lines[i], margin, currentPageY);
+                    currentPageY += lineHeight;
+                }
+            }
+            
+            // Add page numbers if selected
+            if (pageNumbers) {
+                const pageCount = pdf.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    pdf.setPage(i);
+                    pdf.setFontSize(10);
+                    pdf.setFont(undefined, 'normal');
+                    const pageNumberY = pageHeight - 10;
+                    pdf.text(`Page ${i} of ${pageCount}`, pageWidth - margin, pageNumberY, { align: 'right' });
+                }
+            }
+            
+            // Save the PDF
+            pdf.save('text-document.pdf');
+            
+            // Show success message with relevant info
+            const previewSection = document.getElementById('previewSection');
+            const pageCount = pdf.internal.getNumberOfPages();
+            
+            let successMessage = `
+                <div class="preview-title">✅ PDF Generated Successfully!</div>
+                <p>Your PDF has been created and downloaded automatically.</p>
+            `;
+            
+            const pageSizeName = pageSize === 'a4' ? 'A4' : 'Letter';
+            
+            if (singlePage) {
+                successMessage += `<p><strong>All Text Forced to One Page:</strong> ${lines ? lines.length : 0} lines of text fitted on one ${pageSizeName} page (Font size: ${fontSize}pt).</p>`;
+                successMessage += `<p><em>✅ Every word of your text is guaranteed to appear on the single page!</em></p>`;
+            } else {
+                successMessage += `<p><strong>Multi-Page Mode:</strong> Text spans ${pageCount} ${pageSizeName} page${pageCount > 1 ? 's' : ''} (Font size: ${fontSize}pt).</p>`;
+                if (pageSize === 'a4') {
+                    successMessage += `<p><em>📐 A4 size optimized for professional documents with clean multi-page layout!</em></p>`;
+                }
+            }
+            
+            previewSection.innerHTML = successMessage;
+            previewSection.style.display = 'block';
+            
+            // Scroll to success message
+            previewSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

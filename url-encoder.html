@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Encoder/Decoder - SujanTech Developer Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.15);
+            overflow: hidden;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 50px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="70" cy="20" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(-100px) translateY(-100px); }
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .tool-section {
+            background: linear-gradient(145deg, #f8fafc 0%, #ffffff 100%);
+            border-radius: 20px;
+            padding: 35px;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .tool-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .textarea-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 25px;
+            border: 3px solid #e1e8ed;
+            border-radius: 16px;
+            font-size: 15px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .textarea:focus {
+            outline: none;
+            border-color: #11998e;
+            box-shadow: 0 0 0 4px rgba(17, 153, 142, 0.1);
+            background: white;
+        }
+
+        .char-count {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            font-size: 0.85rem;
+            color: #64748b;
+            background: rgba(255,255,255,0.95);
+            padding: 6px 12px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            transition: left 0.3s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: #64748b;
+            border: 2px solid #cbd5e1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(145deg, #e2e8f0 0%, #cbd5e1 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+            border: 2px solid #86efac;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-box::before {
+            content: '🌐';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 4rem;
+            opacity: 0.1;
+        }
+
+        .info-title {
+            color: #166534;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+        }
+
+        .info-text {
+            color: #15803d;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .example {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .example::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(17, 153, 142, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .example:hover::before {
+            left: 100%;
+        }
+
+        .example:hover {
+            border-color: #11998e;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(17, 153, 142, 0.15);
+        }
+
+        .example-title {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .example-text {
+            font-size: 0.9rem;
+            color: #64748b;
+            font-family: 'Monaco', monospace;
+            word-break: break-all;
+        }
+
+        .url-parts {
+            background: linear-gradient(145deg, #fef3c7 0%, #fef59e 100%);
+            border: 2px solid #fbbf24;
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .url-parts-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .url-part {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .url-part:last-child {
+            border-bottom: none;
+        }
+
+        .url-part-label {
+            font-weight: 600;
+            color: #92400e;
+        }
+
+        .url-part-value {
+            font-family: 'Monaco', monospace;
+            color: #451a03;
+            background: rgba(255,255,255,0.5);
+            padding: 4px 8px;
+            border-radius: 6px;
+            word-break: break-all;
+            max-width: 60%;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 20px;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+
+            .tool-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                justify-content: center;
+            }
+            
+            .back-btn {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin-bottom: 20px;
+                display: inline-block;
+            }
+
+            .url-part {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .url-part-value {
+                max-width: 100%;
+            }
+        }
+
+        .toast {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            z-index: 1000;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(15px);
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="goBack()">← Back to Developer Tools</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🌐 URL Encoder/Decoder</h1>
+            <p>Encode and decode URLs for safe web transmission</p>
+        </div>
+        
+        <div class="content">
+            <div class="info-box">
+                <div class="info-title">
+                    <span>💡</span>
+                    What is URL Encoding?
+                </div>
+                <div class="info-text">
+                    URL encoding converts characters into a format that can be transmitted over the Internet. URLs can only be sent using ASCII characters, so special characters must be converted to percent-encoded format (e.g., space becomes %20).
+                </div>
+            </div>
+
+            <div class="tool-grid">
+                <!-- Encode Section -->
+                <div class="tool-section">
+                    <div class="section-title">
+                        <div class="section-icon">🔒</div>
+                        URL Encode
+                    </div>
+                    
+                    <div class="textarea-container">
+                        <textarea 
+                            id="encodeInput" 
+                            class="textarea" 
+                            placeholder="Enter URL or text to encode..."
+                            oninput="updateCharCount('encode'); analyzeURL('encode')"
+                        ></textarea>
+                        <div class="char-count" id="encodeCharCount">0 characters</div>
+                    </div>
+
+                    <div class="controls">
+                        <button class="btn btn-primary" onclick="encodeURL()">
+                            <span>🔒</span>
+                            Encode
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearInput('encode')">
+                            <span>🗑️</span>
+                            Clear
+                        </button>
+                        <button class="btn btn-success" onclick="copyResult('encodeOutput')">
+                            <span>📋</span>
+                            Copy
+                        </button>
+                    </div>
+
+                    <div class="textarea-container">
+                        <textarea 
+                            id="encodeOutput" 
+                            class="textarea" 
+                            placeholder="Encoded URL will appear here..."
+                            readonly
+                        ></textarea>
+                    </div>
+
+                    <div class="examples">
+                        <div class="example" onclick="loadExample('encode', 'https://example.com/search?q=hello world&lang=en')">
+                            <div class="example-title">Basic URL</div>
+                            <div class="example-text">https://example.com/search?q=hello world&lang=en</div>
+                        </div>
+                        <div class="example" onclick="loadExample('encode', 'Special chars: !@#$%^&*()')">
+                            <div class="example-title">Special Characters</div>
+                            <div class="example-text">Special chars: !@#$%^&*()</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Decode Section -->
+                <div class="tool-section">
+                    <div class="section-title">
+                        <div class="section-icon">🔓</div>
+                        URL Decode
+                    </div>
+                    
+                    <div class="textarea-container">
+                        <textarea 
+                            id="decodeInput" 
+                            class="textarea" 
+                            placeholder="Enter encoded URL to decode..."
+                            oninput="updateCharCount('decode'); analyzeURL('decode')"
+                        ></textarea>
+                        <div class="char-count" id="decodeCharCount">0 characters</div>
+                    </div>
+
+                    <div class="controls">
+                        <button class="btn btn-primary" onclick="decodeURL()">
+                            <span>🔓</span>
+                            Decode
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearInput('decode')">
+                            <span>🗑️</span>
+                            Clear
+                        </button>
+                        <button class="btn btn-success" onclick="copyResult('decodeOutput')">
+                            <span>📋</span>
+                            Copy
+                        </button>
+                    </div>
+
+                    <div class="textarea-container">
+                        <textarea 
+                            id="decodeOutput" 
+                            class="textarea" 
+                            placeholder="Decoded URL will appear here..."
+                            readonly
+                        ></textarea>
+                    </div>
+
+                    <div class="examples">
+                        <div class="example" onclick="loadExample('decode', 'https%3A//example.com/search%3Fq%3Dhello%20world%26lang%3Den')">
+                            <div class="example-title">Encoded URL</div>
+                            <div class="example-text">https%3A//example.com/search%3Fq%3Dhello%20world%26lang%3Den</div>
+                        </div>
+                        <div class="example" onclick="loadExample('decode', 'Special%20chars%3A%20%21%40%23%24%25%5E%26%2A%28%29')">
+                            <div class="example-title">Encoded Text</div>
+                            <div class="example-text">Special%20chars%3A%20%21%40%23%24%25%5E%26%2A%28%29</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- URL Analysis -->
+            <div class="url-parts" id="urlAnalysis" style="display: none;">
+                <div class="url-parts-title">
+                    <span>🔍</span>
+                    URL Analysis
+                </div>
+                <div id="urlPartsContent">
+                    <!-- URL parts will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        function updateCharCount(type) {
+            const input = document.getElementById(type + 'Input');
+            const counter = document.getElementById(type + 'CharCount');
+            const count = input.value.length;
+            counter.textContent = `${count} characters`;
+        }
+
+        function encodeURL() {
+            const input = document.getElementById('encodeInput').value;
+            const output = document.getElementById('encodeOutput');
+            
+            if (!input.trim()) {
+                showToast('Please enter text to encode!', 'error');
+                return;
+            }
+
+            try {
+                const encoded = encodeURIComponent(input);
+                output.value = encoded;
+                showToast('URL encoded successfully!', 'success');
+            } catch (error) {
+                showToast('Error encoding URL: ' + error.message, 'error');
+            }
+        }
+
+        function decodeURL() {
+            const input = document.getElementById('decodeInput').value.trim();
+            const output = document.getElementById('decodeOutput');
+            
+            if (!input) {
+                showToast('Please enter encoded URL to decode!', 'error');
+                return;
+            }
+
+            try {
+                const decoded = decodeURIComponent(input);
+                output.value = decoded;
+                showToast('URL decoded successfully!', 'success');
+            } catch (error) {
+                showToast('Error decoding URL: Invalid URL encoding', 'error');
+            }
+        }
+
+        function clearInput(type) {
+            document.getElementById(type + 'Input').value = '';
+            document.getElementById(type + 'Output').value = '';
+            updateCharCount(type);
+            hideURLAnalysis();
+        }
+
+        function copyResult(outputId) {
+            const output = document.getElementById(outputId);
+            if (!output.value) {
+                showToast('No result to copy!', 'error');
+                return;
+            }
+
+            navigator.clipboard.writeText(output.value).then(() => {
+                showToast('Copied to clipboard!', 'success');
+            }).catch(() => {
+                // Fallback for older browsers
+                output.select();
+                document.execCommand('copy');
+                showToast('Copied to clipboard!', 'success');
+            });
+        }
+
+        function loadExample(type, text) {
+            document.getElementById(type + 'Input').value = text;
+            updateCharCount(type);
+            analyzeURL(type);
+        }
+
+        function analyzeURL(type) {
+            const input = document.getElementById(type + 'Input').value;
+            const analysisDiv = document.getElementById('urlAnalysis');
+            const contentDiv = document.getElementById('urlPartsContent');
+
+            if (!input.trim()) {
+                hideURLAnalysis();
+                return;
+            }
+
+            try {
+                // Try to parse as URL
+                const url = new URL(input.startsWith('http') ? input : 'https://' + input);
+                
+                let partsHTML = '';
+                
+                if (url.protocol) partsHTML += createURLPart('Protocol', url.protocol);
+                if (url.hostname) partsHTML += createURLPart('Hostname', url.hostname);
+                if (url.port) partsHTML += createURLPart('Port', url.port);
+                if (url.pathname && url.pathname !== '/') partsHTML += createURLPart('Path', url.pathname);
+                if (url.search) partsHTML += createURLPart('Query String', url.search);
+                if (url.hash) partsHTML += createURLPart('Fragment', url.hash);
+
+                if (partsHTML) {
+                    contentDiv.innerHTML = partsHTML;
+                    analysisDiv.style.display = 'block';
+                } else {
+                    hideURLAnalysis();
+                }
+            } catch (e) {
+                hideURLAnalysis();
+            }
+        }
+
+        function createURLPart(label, value) {
+            return `
+                <div class="url-part">
+                    <div class="url-part-label">${label}:</div>
+                    <div class="url-part-value">${value}</div>
+                </div>
+            `;
+        }
+
+        function hideURLAnalysis() {
+            document.getElementById('urlAnalysis').style.display = 'none';
+        }
+
+        function showToast(message, type) {
+            // Remove existing toast
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            // Create new toast
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100px)';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 400);
+            }, 3000);
+        }
+
+        // Initialize character counters
+        updateCharCount('encode');
+        updateCharCount('decode');
+    </script>
+</body>
+</html>

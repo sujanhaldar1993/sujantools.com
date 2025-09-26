@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom QR Generator - SujanTech Tools</title>
+    <meta name="description" content="Create custom styled QR codes with logos, colors, patterns, and advanced design options.">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="simple-header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); padding: 8px 0;">
+        <nav style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <button onclick="window.location.href='index.html'" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 8px 20px; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                🏠 Home
+            </button>
+            <h1 style="margin: 0; font-size: 1.2rem; font-weight: 600; color: #333;">🎨 Custom QR Generator</h1>
+            <div style="width: 80px;"></div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main style="margin-top: 80px; padding: 40px 20px;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto;">
+            <!-- Tool Header -->
+            <div class="tool-header" style="text-align: center; margin-bottom: 40px;">
+                <div style="font-size: 4rem; margin-bottom: 20px;">🎨</div>
+                <h1 style="font-size: 2.5rem; font-weight: 700; color: #333; margin: 0 0 15px;">Custom QR Code Generator</h1>
+                <p style="font-size: 1.1rem; color: #666; margin: 0;">Create beautifully styled QR codes with custom colors, patterns, and logos</p>
+            </div>
+
+            <!-- Main Interface -->
+            <div style="display: grid; grid-template-columns: 1fr 400px; gap: 40px; align-items: start;">
+                
+                <!-- Left Panel - Settings -->
+                <div class="settings-panel" style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+                    
+                    <!-- Content Input -->
+                    <div class="content-section" style="margin-bottom: 40px;">
+                        <h3 style="margin: 0 0 20px; font-size: 1.2rem; color: #333; display: flex; align-items: center; gap: 10px;">
+                            📝 QR Code Content
+                        </h3>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-size: 0.9rem; font-weight: 500; color: #555; margin-bottom: 8px;">Content Type:</label>
+                            <select id="contentType" onchange="switchContentType()" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                                <option value="text">Text</option>
+                                <option value="url">URL</option>
+                                <option value="email">Email</option>
+                                <option value="phone">Phone</option>
+                                <option value="wifi">WiFi</option>
+                                <option value="vcard">Business Card</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Content Forms -->
+                        <div id="content-forms">
+                            <!-- Text Form -->
+                            <div id="form-text" class="content-form">
+                                <textarea id="textContent" placeholder="Enter your text here..." style="width: 100%; height: 80px; padding: 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; resize: vertical;" oninput="updateQR()"></textarea>
+                            </div>
+                            
+                            <!-- URL Form -->
+                            <div id="form-url" class="content-form" style="display: none;">
+                                <input type="url" id="urlContent" placeholder="https://example.com" style="width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;" oninput="updateQR()">
+                            </div>
+                            
+                            <!-- Email Form -->
+                            <div id="form-email" class="content-form" style="display: none;">
+                                <div style="display: grid; gap: 15px;">
+                                    <input type="email" id="emailAddress" placeholder="Email address" style="width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;" oninput="updateQR()">
+                                    <input type="text" id="emailSubject" placeholder="Subject (optional)" style="width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;" oninput="updateQR()">
+                                </div>
+                            </div>
+                            
+                            <!-- Phone Form -->
+                            <div id="form-phone" class="content-form" style="display: none;">
+                                <input type="tel" id="phoneNumber" placeholder="+1234567890" style="width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;" oninput="updateQR()">
+                            </div>
+                            
+                            <!-- WiFi Form -->
+                            <div id="form-wifi" class="content-form" style="display: none;">
+                                <div style="display: grid; gap: 15px;">
+                                    <input type="text" id="wifiSSID" placeholder="Network Name (SSID)" style="width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;" oninput="updateQR()">
+                                    <input type="password" id="wifiPassword" placeholder="Password" style="width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;" oninput="updateQR()">
+                                    <select id="wifiSecurity" onchange="updateQR()" style="width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;">
+                                        <option value="WPA">WPA/WPA2</option>
+                                        <option value="WEP">WEP</option>
+                                        <option value="">None</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Business Card Form -->
+                            <div id="form-vcard" class="content-form" style="display: none;">
+                                <div style="display: grid; gap: 15px;">
+                                    <input type="text" id="vcardName" placeholder="Full Name" style="width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;" oninput="updateQR()">
+                                    <input type="text" id="vcardCompany" placeholder="Company" style="width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;" oninput="updateQR()">
+                                    <input type="tel" id="vcardPhone" placeholder="Phone" style="width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;" oninput="updateQR()">
+                                    <input type="email" id="vcardEmail" placeholder="Email" style="width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px;" oninput="updateQR()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Style Settings -->
+                    <div class="style-section" style="margin-bottom: 40px;">
+                        <h3 style="margin: 0 0 20px; font-size: 1.2rem; color: #333; display: flex; align-items: center; gap: 10px;">
+                            🎨 Style Settings
+                        </h3>
+                        
+                        <!-- Size and Error Correction -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                            <div>
+                                <label style="display: block; font-size: 0.9rem; font-weight: 500; color: #555; margin-bottom: 8px;">Size:</label>
+                                <select id="qrSize" onchange="updateQR()" style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                                    <option value="300">300x300</option>
+                                    <option value="400" selected>400x400</option>
+                                    <option value="500">500x500</option>
+                                    <option value="600">600x600</option>
+                                    <option value="800">800x800</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.9rem; font-weight: 500; color: #555; margin-bottom: 8px;">Quality:</label>
+                                <select id="errorCorrection" onchange="updateQR()" style="width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                                    <option value="L">Low (7%)</option>
+                                    <option value="M" selected>Medium (15%)</option>
+                                    <option value="Q">Quartile (25%)</option>
+                                    <option value="H">High (30%)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Color Settings -->
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-size: 0.9rem; font-weight: 500; color: #555; margin-bottom: 12px;">Colors:</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <label style="font-size: 0.8rem; color: #666; margin-bottom: 5px; display: block;">Foreground:</label>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <input type="color" id="fgColor" value="#000000" onchange="updateQR()" style="width: 50px; height: 35px; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer;">
+                                        <input type="text" id="fgHex" value="#000000" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 12px; font-family: monospace;" onchange="updateColorFromHex('fg')">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.8rem; color: #666; margin-bottom: 5px; display: block;">Background:</label>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <input type="color" id="bgColor" value="#ffffff" onchange="updateQR()" style="width: 50px; height: 35px; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer;">
+                                        <input type="text" id="bgHex" value="#ffffff" style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 12px; font-family: monospace;" onchange="updateColorFromHex('bg')">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gradient Options -->
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 500; color: #555; margin-bottom: 12px;">
+                                <input type="checkbox" id="enableGradient" onchange="toggleGradient()" style="transform: scale(1.2);">
+                                Enable Gradient
+                            </label>
+                            <div id="gradient-controls" style="display: none;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
+                                    <div>
+                                        <label style="font-size: 0.8rem; color: #666;">Start Color:</label>
+                                        <input type="color" id="gradientStart" value="#ff6b6b" onchange="updateQR()" style="width: 100%; height: 35px; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 0.8rem; color: #666;">End Color:</label>
+                                        <input type="color" id="gradientEnd" value="#4ecdc4" onchange="updateQR()" style="width: 100%; height: 35px; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer;">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.8rem; color: #666; margin-bottom: 5px; display: block;">Direction:</label>
+                                    <select id="gradientDirection" onchange="updateQR()" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 14px;">
+                                        <option value="0">Horizontal →</option>
+                                        <option value="90">Vertical ↓</option>
+                                        <option value="45">Diagonal ↘</option>
+                                        <option value="135">Diagonal ↙</option>
+                                        <option value="radial">Radial ○</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Logo Upload -->
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 500; color: #555; margin-bottom: 12px;">
+                                <input type="checkbox" id="enableLogo" onchange="toggleLogo()" style="transform: scale(1.2);">
+                                Add Logo/Image
+                            </label>
+                            <div id="logo-controls" style="display: none;">
+                                <div style="border: 2px dashed #e2e8f0; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s ease;" onclick="document.getElementById('logoInput').click()">
+                                    <div style="font-size: 2rem; margin-bottom: 10px; color: #94a3b8;">🖼️</div>
+                                    <p style="margin: 0; color: #666; font-size: 0.9rem;">Click to upload logo</p>
+                                    <p style="margin: 5px 0 0; color: #999; font-size: 0.8rem;">PNG, JPG recommended</p>
+                                </div>
+                                <input type="file" id="logoInput" accept="image/*" style="display: none;" onchange="handleLogoUpload(event)">
+                                <div id="logo-settings" style="display: none; margin-top: 15px;">
+                                    <label style="font-size: 0.8rem; color: #666; margin-bottom: 5px; display: block;">Logo Size:</label>
+                                    <input type="range" id="logoSize" min="5" max="30" value="15" oninput="updateQR()" style="width: 100%; margin-bottom: 10px;">
+                                    <div style="text-align: center; font-size: 0.8rem; color: #666;"><span id="logoSizeValue">15</span>% of QR size</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Style Presets -->
+                        <div>
+                            <label style="display: block; font-size: 0.9rem; font-weight: 500; color: #555; margin-bottom: 12px;">Quick Presets:</label>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: 8px;">
+                                <button onclick="applyPreset('classic')" style="padding: 8px; border: 2px solid #333; background: #333; color: white; border-radius: 6px; font-size: 11px; cursor: pointer;">Classic</button>
+                                <button onclick="applyPreset('modern')" style="padding: 8px; border: 2px solid #667eea; background: #667eea; color: white; border-radius: 6px; font-size: 11px; cursor: pointer;">Modern</button>
+                                <button onclick="applyPreset('nature')" style="padding: 8px; border: 2px solid #48bb78; background: #48bb78; color: white; border-radius: 6px; font-size: 11px; cursor: pointer;">Nature</button>
+                                <button onclick="applyPreset('sunset')" style="padding: 8px; border: 2px solid #ed8936; background: #ed8936; color: white; border-radius: 6px; font-size: 11px; cursor: pointer;">Sunset</button>
+                                <button onclick="applyPreset('ocean')" style="padding: 8px; border: 2px solid #4299e1; background: #4299e1; color: white; border-radius: 6px; font-size: 11px; cursor: pointer;">Ocean</button>
+                                <button onclick="applyPreset('royal')" style="padding: 8px; border: 2px solid #805ad5; background: #805ad5; color: white; border-radius: 6px; font-size: 11px; cursor: pointer;">Royal</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="actions-section">
+                        <button onclick="downloadQR()" id="downloadBtn" disabled style="width: 100%; background: #94a3b8; color: white; border: none; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: not-allowed; margin-bottom: 10px;">
+                            📥 Download QR Code
+                        </button>
+                        <button onclick="saveAsTemplate()" style="width: 100%; background: #f8fafc; color: #666; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;">
+                            💾 Save as Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel - Preview -->
+                <div class="preview-panel" style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; text-align: center; position: sticky; top: 100px;">
+                    <h3 style="margin: 0 0 30px; font-size: 1.2rem; color: #333;">👁️ Live Preview</h3>
+                    
+                    <!-- QR Code Display -->
+                    <div style="margin-bottom: 30px;">
+                        <div id="qr-preview-container" style="display: inline-block; position: relative; padding: 20px; background: #f8fafc; border-radius: 12px; border: 2px solid #e2e8f0;">
+                            <canvas id="qr-canvas" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);"></canvas>
+                            <div id="logo-overlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- QR Info -->
+                    <div id="qr-info" style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: left; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 10px; color: #333; font-size: 1rem;">📊 QR Code Info</h4>
+                        <div style="font-size: 0.9rem; color: #666; line-height: 1.5;">
+                            <div><strong>Type:</strong> <span id="info-type">Text</span></div>
+                            <div><strong>Size:</strong> <span id="info-size">400x400</span></div>
+                            <div><strong>Error Correction:</strong> <span id="info-ec">Medium</span></div>
+                            <div><strong>Data Length:</strong> <span id="info-length">0</span> chars</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button onclick="copyToClipboard()" style="background: #e2e8f0; color: #666; border: none; padding: 10px; border-radius: 8px; font-size: 14px; cursor: pointer;">
+                            📋 Copy
+                        </button>
+                        <button onclick="openFullscreen()" style="background: #e2e8f0; color: #666; border: none; padding: 10px; border-radius: 8px; font-size: 14px; cursor: pointer;">
+                            🔍 Fullscreen
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Info -->
+            <div class="features-info" style="margin-top: 60px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div style="background: #f8fafc; padding: 20px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🎨</div>
+                    <h4 style="margin: 0 0 8px; color: #333;">Custom Styling</h4>
+                    <p style="margin: 0; color: #666; font-size: 0.9rem;">Colors, gradients, patterns</p>
+                </div>
+                <div style="background: #f8fafc; padding: 20px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🖼️</div>
+                    <h4 style="margin: 0 0 8px; color: #333;">Logo Integration</h4>
+                    <p style="margin: 0; color: #666; font-size: 0.9rem;">Add your brand logo</p>
+                </div>
+                <div style="background: #f8fafc; padding: 20px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">⚡</div>
+                    <h4 style="margin: 0 0 8px; color: #333;">Live Preview</h4>
+                    <p style="margin: 0; color: #666; font-size: 0.9rem;">Real-time updates</p>
+                </div>
+                <div style="background: #f8fafc; padding: 20px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">📐</div>
+                    <h4 style="margin: 0 0 8px; color: #333;">High Resolution</h4>
+                    <p style="margin: 0; color: #666; font-size: 0.9rem;">Up to 800x800 pixels</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentLogoImage = null;
+        let currentQRData = '';
+
+        // Initialize
+        document.getElementById('textContent').value = 'Hello, Custom QR!';
+        updateQR();
+
+        function switchContentType() {
+            const type = document.getElementById('contentType').value;
+            
+            // Hide all forms
+            document.querySelectorAll('.content-form').forEach(form => {
+                form.style.display = 'none';
+            });
+            
+            // Show selected form
+            document.getElementById(`form-${type}`).style.display = 'block';
+            
+            updateQR();
+        }
+
+        function updateColorFromHex(type) {
+            const hexInput = document.getElementById(`${type}Hex`);
+            const colorInput = document.getElementById(`${type}Color`);
+            
+            if (/^#[0-9A-F]{6}$/i.test(hexInput.value)) {
+                colorInput.value = hexInput.value;
+                updateQR();
+            }
+        }
+
+        function toggleGradient() {
+            const enabled = document.getElementById('enableGradient').checked;
+            const controls = document.getElementById('gradient-controls');
+            controls.style.display = enabled ? 'block' : 'none';
+            updateQR();
+        }
+
+        function toggleLogo() {
+            const enabled = document.getElementById('enableLogo').checked;
+            const controls = document.getElementById('logo-controls');
+            controls.style.display = enabled ? 'block' : 'none';
+            updateQR();
+        }
+
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        currentLogoImage = img;
+                        document.getElementById('logo-settings').style.display = 'block';
+                        updateQR();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function applyPreset(preset) {
+            const presets = {
+                classic: { fg: '#000000', bg: '#ffffff', gradient: false },
+                modern: { fg: '#667eea', bg: '#ffffff', gradient: true, start: '#667eea', end: '#764ba2', dir: '45' },
+                nature: { fg: '#48bb78', bg: '#ffffff', gradient: true, start: '#48bb78', end: '#38a169', dir: '90' },
+                sunset: { fg: '#ed8936', bg: '#ffffff', gradient: true, start: '#ed8936', end: '#dd6b20', dir: '135' },
+                ocean: { fg: '#4299e1', bg: '#ffffff', gradient: true, start: '#4299e1', end: '#3182ce', dir: '0' },
+                royal: { fg: '#805ad5', bg: '#ffffff', gradient: true, start: '#805ad5', end: '#6b46c1', dir: 'radial' }
+            };
+            
+            const p = presets[preset];
+            document.getElementById('fgColor').value = p.fg;
+            document.getElementById('fgHex').value = p.fg;
+            document.getElementById('bgColor').value = p.bg;
+            document.getElementById('bgHex').value = p.bg;
+            
+            document.getElementById('enableGradient').checked = p.gradient;
+            toggleGradient();
+            
+            if (p.gradient) {
+                document.getElementById('gradientStart').value = p.start;
+                document.getElementById('gradientEnd').value = p.end;
+                document.getElementById('gradientDirection').value = p.dir;
+            }
+            
+            updateQR();
+        }
+
+        function getQRContent() {
+            const type = document.getElementById('contentType').value;
+            
+            switch(type) {
+                case 'text':
+                    return document.getElementById('textContent').value;
+                case 'url':
+                    return document.getElementById('urlContent').value;
+                case 'email':
+                    const email = document.getElementById('emailAddress').value;
+                    const subject = document.getElementById('emailSubject').value;
+                    return email ? `mailto:${email}${subject ? `?subject=${encodeURIComponent(subject)}` : ''}` : '';
+                case 'phone':
+                    const phone = document.getElementById('phoneNumber').value;
+                    return phone ? `tel:${phone}` : '';
+                case 'wifi':
+                    const ssid = document.getElementById('wifiSSID').value;
+                    const password = document.getElementById('wifiPassword').value;
+                    const security = document.getElementById('wifiSecurity').value;
+                    return ssid ? `WIFI:T:${security};S:${ssid};P:${password};H:false;;` : '';
+                case 'vcard':
+                    const name = document.getElementById('vcardName').value;
+                    const company = document.getElementById('vcardCompany').value;
+                    const vcardPhone = document.getElementById('vcardPhone').value;
+                    const vcardEmail = document.getElementById('vcardEmail').value;
+                    if (name) {
+                        return `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\n${company ? `ORG:${company}\n` : ''}${vcardPhone ? `TEL:${vcardPhone}\n` : ''}${vcardEmail ? `EMAIL:${vcardEmail}\n` : ''}END:VCARD`;
+                    }
+                    return '';
+                default:
+                    return '';
+            }
+        }
+
+        function updateQR() {
+            const content = getQRContent();
+            currentQRData = content;
+            
+            if (!content) {
+                document.getElementById('downloadBtn').disabled = true;
+                document.getElementById('downloadBtn').style.background = '#94a3b8';
+                document.getElementById('downloadBtn').style.cursor = 'not-allowed';
+                return;
+            }
+            
+            const canvas = document.getElementById('qr-canvas');
+            const size = parseInt(document.getElementById('qrSize').value);
+            const errorCorrection = document.getElementById('errorCorrection').value;
+            const enableGradient = document.getElementById('enableGradient').checked;
+            
+            let color;
+            
+            if (enableGradient) {
+                const ctx = canvas.getContext('2d');
+                const direction = document.getElementById('gradientDirection').value;
+                const startColor = document.getElementById('gradientStart').value;
+                const endColor = document.getElementById('gradientEnd').value;
+                
+                if (direction === 'radial') {
+                    const gradient = ctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+                    gradient.addColorStop(0, startColor);
+                    gradient.addColorStop(1, endColor);
+                    color = { dark: gradient, light: document.getElementById('bgColor').value };
+                } else {
+                    const angle = parseInt(direction) * Math.PI / 180;
+                    const x1 = direction === '0' ? 0 : direction === '90' ? size/2 : direction === '45' ? 0 : size;
+                    const y1 = direction === '0' ? size/2 : direction === '90' ? 0 : direction === '45' ? 0 : 0;
+                    const x2 = direction === '0' ? size : direction === '90' ? size/2 : direction === '45' ? size : 0;
+                    const y2 = direction === '0' ? size/2 : direction === '90' ? size : direction === '45' ? size : size;
+                    
+                    const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
+                    gradient.addColorStop(0, startColor);
+                    gradient.addColorStop(1, endColor);
+                    color = { dark: gradient, light: document.getElementById('bgColor').value };
+                }
+            } else {
+                color = {
+                    dark: document.getElementById('fgColor').value,
+                    light: document.getElementById('bgColor').value
+                };
+            }
+            
+            QRCode.toCanvas(canvas, content, {
+                width: size,
+                height: size,
+                color: color,
+                errorCorrectionLevel: errorCorrection,
+                margin: 2
+            }, (error) => {
+                if (!error) {
+                    // Add logo if enabled
+                    if (document.getElementById('enableLogo').checked && currentLogoImage) {
+                        addLogoToCanvas(canvas);
+                    }
+                    
+                    // Update info
+                    updateQRInfo(content, size, errorCorrection);
+                    
+                    // Enable download
+                    document.getElementById('downloadBtn').disabled = false;
+                    document.getElementById('downloadBtn').style.background = 'linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%)';
+                    document.getElementById('downloadBtn').style.cursor = 'pointer';
+                } else {
+                    console.error('QR Code generation error:', error);
+                }
+            });
+            
+            // Update logo size display
+            const logoSizeSlider = document.getElementById('logoSize');
+            document.getElementById('logoSizeValue').textContent = logoSizeSlider.value;
+        }
+
+        function addLogoToCanvas(canvas) {
+            if (!currentLogoImage) return;
+            
+            const ctx = canvas.getContext('2d');
+            const logoSizePercent = parseInt(document.getElementById('logoSize').value);
+            const logoSize = (canvas.width * logoSizePercent) / 100;
+            const logoX = (canvas.width - logoSize) / 2;
+            const logoY = (canvas.height - logoSize) / 2;
+            
+            // Add white background behind logo
+            ctx.fillStyle = 'white';
+            ctx.fillRect(logoX - 5, logoY - 5, logoSize + 10, logoSize + 10);
+            
+            // Draw logo
+            ctx.drawImage(currentLogoImage, logoX, logoY, logoSize, logoSize);
+        }
+
+        function updateQRInfo(content, size, errorCorrection) {
+            const type = document.getElementById('contentType').value;
+            const ecNames = { L: 'Low (7%)', M: 'Medium (15%)', Q: 'Quartile (25%)', H: 'High (30%)' };
+            
+            document.getElementById('info-type').textContent = type.charAt(0).toUpperCase() + type.slice(1);
+            document.getElementById('info-size').textContent = `${size}x${size}`;
+            document.getElementById('info-ec').textContent = ecNames[errorCorrection];
+            document.getElementById('info-length').textContent = content.length;
+        }
+
+        function downloadQR() {
+            const canvas = document.getElementById('qr-canvas');
+            if (canvas) {
+                const link = document.createElement('a');
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/[:-]/g, '');
+                link.download = `custom-qr-${timestamp}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+                showSuccessMessage('Custom QR code downloaded!');
+            }
+        }
+
+        function copyToClipboard() {
+            const canvas = document.getElementById('qr-canvas');
+            canvas.toBlob(blob => {
+                navigator.clipboard.write([
+                    new ClipboardItem({ 'image/png': blob })
+                ]).then(() => {
+                    showSuccessMessage('QR code copied to clipboard!');
+                }).catch(() => {
+                    // Fallback: copy the data URL as text
+                    navigator.clipboard.writeText(currentQRData).then(() => {
+                        showSuccessMessage('QR code content copied to clipboard!');
+                    });
+                });
+            });
+        }
+
+        function openFullscreen() {
+            const canvas = document.getElementById('qr-canvas');
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.9); z-index: 10000; display: flex;
+                align-items: center; justify-content: center; cursor: pointer;
+            `;
+            
+            const img = document.createElement('img');
+            img.src = canvas.toDataURL();
+            img.style.cssText = 'max-width: 90%; max-height: 90%; border-radius: 10px;';
+            
+            modal.appendChild(img);
+            modal.onclick = () => modal.remove();
+            document.body.appendChild(modal);
+        }
+
+        function saveAsTemplate() {
+            const template = {
+                contentType: document.getElementById('contentType').value,
+                size: document.getElementById('qrSize').value,
+                errorCorrection: document.getElementById('errorCorrection').value,
+                fgColor: document.getElementById('fgColor').value,
+                bgColor: document.getElementById('bgColor').value,
+                enableGradient: document.getElementById('enableGradient').checked,
+                gradientStart: document.getElementById('gradientStart').value,
+                gradientEnd: document.getElementById('gradientEnd').value,
+                gradientDirection: document.getElementById('gradientDirection').value,
+                enableLogo: document.getElementById('enableLogo').checked,
+                logoSize: document.getElementById('logoSize').value
+            };
+            
+            const templateJSON = JSON.stringify(template, null, 2);
+            const blob = new Blob([templateJSON], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'qr-template.json';
+            link.click();
+            
+            showSuccessMessage('Template saved successfully!');
+        }
+
+        function showSuccessMessage(message) {
+            const successDiv = document.createElement('div');
+            successDiv.style.cssText = `
+                position: fixed; top: 100px; right: 20px;
+                background: #10b981; color: white; padding: 15px 20px;
+                border-radius: 10px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+                z-index: 1000; font-weight: 600; animation: slideIn 0.3s ease;
+            `;
+            successDiv.textContent = `✅ ${message}`;
+            document.body.appendChild(successDiv);
+            setTimeout(() => successDiv.remove(), 3000);
+        }
+
+        // Update hex inputs when color pickers change
+        document.getElementById('fgColor').addEventListener('input', function() {
+            document.getElementById('fgHex').value = this.value;
+        });
+        
+        document.getElementById('bgColor').addEventListener('input', function() {
+            document.getElementById('bgHex').value = this.value;
+        });
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+
+            @media (max-width: 1200px) {
+                main > .container > div {
+                    grid-template-columns: 1fr !important;
+                }
+                
+                .preview-panel {
+                    position: relative !important;
+                    top: auto !important;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .style-section > div:first-child {
+                    grid-template-columns: 1fr !important;
+                }
+                
+                .style-section #gradient-controls > div:first-child {
+                    grid-template-columns: 1fr !important;
+                }
+                
+                .features-info {
+                    grid-template-columns: repeat(2, 1fr) !important;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

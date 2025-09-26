@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Reader - SujanTech Tools</title>
+    <meta name="description" content="Read and decode QR codes online for free. Upload image or use camera to scan QR codes.">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="simple-header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); padding: 8px 0;">
+        <nav style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <button onclick="window.location.href='index.html'" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 8px 20px; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                🏠 Home
+            </button>
+            <h1 style="margin: 0; font-size: 1.2rem; font-weight: 600; color: #333;">🔍 QR Reader</h1>
+            <div style="width: 80px;"></div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main style="margin-top: 80px; padding: 40px 20px;">
+        <div class="container" style="max-width: 900px; margin: 0 auto;">
+            <!-- Tool Header -->
+            <div class="tool-header" style="text-align: center; margin-bottom: 40px;">
+                <div style="font-size: 4rem; margin-bottom: 20px;">🔍</div>
+                <h1 style="font-size: 2.5rem; font-weight: 700; color: #333; margin: 0 0 15px;">QR Code Reader</h1>
+                <p style="font-size: 1.1rem; color: #666; margin: 0;">Scan QR codes from images or using your device camera</p>
+            </div>
+
+            <!-- Tool Interface -->
+            <div class="tool-interface" style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+                
+                <!-- Mode Selector -->
+                <div class="mode-selector" style="margin-bottom: 30px; text-align: center;">
+                    <div style="display: inline-flex; background: #f8fafc; border-radius: 12px; padding: 4px; border: 1px solid #e2e8f0;">
+                        <button onclick="switchMode('upload')" id="upload-btn" class="mode-btn active" style="padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: #4ECDC4; color: white;">
+                            📤 Upload Image
+                        </button>
+                        <button onclick="switchMode('camera')" id="camera-btn" class="mode-btn" style="padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: transparent; color: #666;">
+                            📷 Use Camera
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upload Mode -->
+                <div id="upload-mode" class="scanning-mode" style="display: block;">
+                    <!-- File Upload Area -->
+                    <div class="upload-area" onclick="document.getElementById('fileInput').click()" style="border: 2px dashed #4ECDC4; border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s ease; background: #f8fafc;">
+                        <div style="font-size: 3rem; margin-bottom: 20px; color: #4ECDC4;">📤</div>
+                        <h3 style="margin: 0 0 10px; color: #333; font-size: 1.2rem;">Upload QR Code Image</h3>
+                        <p style="margin: 0; color: #666; font-size: 0.9rem;">Click to select an image file containing a QR code</p>
+                        <p style="margin: 10px 0 0; color: #999; font-size: 0.8rem;">Supports: PNG, JPG, GIF, WebP</p>
+                    </div>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
+                </div>
+
+                <!-- Camera Mode -->
+                <div id="camera-mode" class="scanning-mode" style="display: none;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <button onclick="startCamera()" id="start-camera-btn" style="background: #4ECDC4; color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-right: 10px;">
+                            📷 Start Camera
+                        </button>
+                        <button onclick="stopCamera()" id="stop-camera-btn" disabled style="background: #ef4444; color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; opacity: 0.6;">
+                            ⏹️ Stop Camera
+                        </button>
+                    </div>
+                    
+                    <!-- Camera Preview -->
+                    <div style="position: relative; max-width: 500px; margin: 0 auto; border-radius: 12px; overflow: hidden; background: #f8fafc;">
+                        <video id="video" style="width: 100%; height: auto; display: none; border-radius: 12px;"></video>
+                        <canvas id="canvas" style="display: none;"></canvas>
+                        <div id="camera-placeholder" style="aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 4rem; margin-bottom: 15px;">📷</div>
+                                <p style="margin: 0; font-size: 1.1rem;">Camera preview will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Scan Status -->
+                    <div id="scan-status" style="text-align: center; margin-top: 15px; padding: 10px; border-radius: 8px; background: #f0f9ff; color: #0369a1; font-weight: 500; display: none;">
+                        📡 Scanning for QR codes...
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div id="results-section" style="margin-top: 40px; display: none;">
+                    <div style="border-top: 1px solid #e2e8f0; padding-top: 30px;">
+                        <h3 style="margin: 0 0 20px; color: #333; font-size: 1.3rem; text-align: center;">📊 Scan Results</h3>
+                        
+                        <!-- Success Result -->
+                        <div id="success-result" style="display: none;">
+                            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                    <span style="font-size: 1.5rem;">✅</span>
+                                    <h4 style="margin: 0; font-size: 1.1rem;">QR Code Detected Successfully!</h4>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; word-break: break-all;">
+                                    <strong>Decoded Content:</strong>
+                                    <div id="decoded-content" style="margin-top: 8px; font-family: monospace; line-height: 1.4;"></div>
+                                </div>
+                                <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                                    <button onclick="copyToClipboard()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px;">
+                                        📋 Copy
+                                    </button>
+                                    <button onclick="openAsURL()" id="open-url-btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; display: none;">
+                                        🌐 Open URL
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Content Analysis -->
+                            <div id="content-analysis" style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                <h4 style="margin: 0 0 15px; color: #333; font-size: 1rem;">📋 Content Analysis</h4>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                                    <div>
+                                        <strong style="color: #555; font-size: 0.9rem;">Type:</strong>
+                                        <div id="content-type" style="color: #333; margin-top: 2px;"></div>
+                                    </div>
+                                    <div>
+                                        <strong style="color: #555; font-size: 0.9rem;">Length:</strong>
+                                        <div id="content-length" style="color: #333; margin-top: 2px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Error Result -->
+                        <div id="error-result" style="display: none;">
+                            <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 20px; border-radius: 12px;">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                    <span style="font-size: 1.5rem;">❌</span>
+                                    <h4 style="margin: 0; font-size: 1.1rem;">No QR Code Detected</h4>
+                                </div>
+                                <p style="margin: 0; opacity: 0.9;">Please make sure the image contains a clear, visible QR code and try again.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Info -->
+            <div class="features-info" style="margin-top: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div style="background: #f8fafc; padding: 20px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">📤</div>
+                    <h4 style="margin: 0 0 8px; color: #333;">Upload & Scan</h4>
+                    <p style="margin: 0; color: #666; font-size: 0.9rem;">Upload images or use camera</p>
+                </div>
+                <div style="background: #f8fafc; padding: 20px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🔍</div>
+                    <h4 style="margin: 0 0 8px; color: #333;">Instant Decode</h4>
+                    <p style="margin: 0; color: #666; font-size: 0.9rem;">Fast QR code recognition</p>
+                </div>
+                <div style="background: #f8fafc; padding: 20px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🔒</div>
+                    <h4 style="margin: 0 0 8px; color: #333;">Private & Secure</h4>
+                    <p style="margin: 0; color: #666; font-size: 0.9rem;">All processing done locally</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let video = null;
+        let canvas = null;
+        let context = null;
+        let scanning = false;
+        let currentContent = '';
+        
+        function switchMode(mode) {
+            // Update button styles
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.style.background = 'transparent';
+                btn.style.color = '#666';
+                btn.classList.remove('active');
+            });
+            
+            if (mode === 'upload') {
+                document.getElementById('upload-btn').style.background = '#4ECDC4';
+                document.getElementById('upload-btn').style.color = 'white';
+                document.getElementById('upload-mode').style.display = 'block';
+                document.getElementById('camera-mode').style.display = 'none';
+                stopCamera();
+            } else {
+                document.getElementById('camera-btn').style.background = '#4ECDC4';
+                document.getElementById('camera-btn').style.color = 'white';
+                document.getElementById('upload-mode').style.display = 'none';
+                document.getElementById('camera-mode').style.display = 'block';
+            }
+            
+            hideResults();
+        }
+        
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    processImage(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function processImage(imageSrc) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                context.drawImage(img, 0, 0);
+                
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+                
+                if (code) {
+                    showSuccess(code.data);
+                } else {
+                    showError();
+                }
+            };
+            img.src = imageSrc;
+        }
+        
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' } 
+                });
+                
+                video = document.getElementById('video');
+                canvas = document.getElementById('canvas');
+                context = canvas.getContext('2d');
+                
+                video.srcObject = stream;
+                video.style.display = 'block';
+                document.getElementById('camera-placeholder').style.display = 'none';
+                document.getElementById('scan-status').style.display = 'block';
+                
+                document.getElementById('start-camera-btn').disabled = true;
+                document.getElementById('start-camera-btn').style.opacity = '0.6';
+                document.getElementById('start-camera-btn').style.cursor = 'not-allowed';
+                
+                document.getElementById('stop-camera-btn').disabled = false;
+                document.getElementById('stop-camera-btn').style.opacity = '1';
+                document.getElementById('stop-camera-btn').style.cursor = 'pointer';
+                
+                video.play();
+                scanning = true;
+                scanFrame();
+                
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                showCameraError();
+            }
+        }
+        
+        function stopCamera() {
+            if (video && video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                video.style.display = 'none';
+                document.getElementById('camera-placeholder').style.display = 'flex';
+                document.getElementById('scan-status').style.display = 'none';
+            }
+            
+            scanning = false;
+            
+            document.getElementById('start-camera-btn').disabled = false;
+            document.getElementById('start-camera-btn').style.opacity = '1';
+            document.getElementById('start-camera-btn').style.cursor = 'pointer';
+            
+            document.getElementById('stop-camera-btn').disabled = true;
+            document.getElementById('stop-camera-btn').style.opacity = '0.6';
+            document.getElementById('stop-camera-btn').style.cursor = 'not-allowed';
+        }
+        
+        function scanFrame() {
+            if (!scanning || !video) return;
+            
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+                
+                if (code) {
+                    scanning = false;
+                    stopCamera();
+                    showSuccess(code.data);
+                    return;
+                }
+            }
+            
+            requestAnimationFrame(scanFrame);
+        }
+        
+        function showSuccess(content) {
+            currentContent = content;
+            document.getElementById('results-section').style.display = 'block';
+            document.getElementById('success-result').style.display = 'block';
+            document.getElementById('error-result').style.display = 'none';
+            document.getElementById('decoded-content').textContent = content;
+            
+            // Analyze content
+            analyzeContent(content);
+            
+            // Scroll to results
+            document.getElementById('results-section').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+            
+            // Show success message
+            showSuccessMessage('QR code decoded successfully!');
+        }
+        
+        function showError() {
+            document.getElementById('results-section').style.display = 'block';
+            document.getElementById('success-result').style.display = 'none';
+            document.getElementById('error-result').style.display = 'block';
+            
+            // Scroll to results
+            document.getElementById('results-section').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+        
+        function hideResults() {
+            document.getElementById('results-section').style.display = 'none';
+        }
+        
+        function analyzeContent(content) {
+            let type = 'Text';
+            const openUrlBtn = document.getElementById('open-url-btn');
+            
+            if (content.startsWith('http://') || content.startsWith('https://')) {
+                type = 'URL';
+                openUrlBtn.style.display = 'inline-block';
+            } else if (content.startsWith('mailto:')) {
+                type = 'Email';
+                openUrlBtn.style.display = 'inline-block';
+            } else if (content.startsWith('tel:')) {
+                type = 'Phone Number';
+                openUrlBtn.style.display = 'inline-block';
+            } else if (content.startsWith('sms:')) {
+                type = 'SMS';
+            } else if (content.startsWith('WIFI:')) {
+                type = 'WiFi Network';
+            } else {
+                openUrlBtn.style.display = 'none';
+            }
+            
+            document.getElementById('content-type').textContent = type;
+            document.getElementById('content-length').textContent = `${content.length} characters`;
+        }
+        
+        function copyToClipboard() {
+            navigator.clipboard.writeText(currentContent).then(() => {
+                showSuccessMessage('Content copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = currentContent;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showSuccessMessage('Content copied to clipboard!');
+            });
+        }
+        
+        function openAsURL() {
+            if (currentContent.startsWith('http://') || currentContent.startsWith('https://')) {
+                window.open(currentContent, '_blank');
+            } else if (currentContent.startsWith('mailto:') || currentContent.startsWith('tel:') || currentContent.startsWith('sms:')) {
+                window.location.href = currentContent;
+            }
+        }
+        
+        function showCameraError() {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = `
+                position: fixed; top: 100px; right: 20px;
+                background: #ef4444; color: white; padding: 15px 20px;
+                border-radius: 10px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+                z-index: 1000; font-weight: 600;
+            `;
+            errorDiv.textContent = '❌ Camera access denied or not available';
+            document.body.appendChild(errorDiv);
+            setTimeout(() => errorDiv.remove(), 4000);
+        }
+        
+        function showSuccessMessage(message) {
+            const successDiv = document.createElement('div');
+            successDiv.style.cssText = `
+                position: fixed; top: 100px; right: 20px;
+                background: #10b981; color: white; padding: 15px 20px;
+                border-radius: 10px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+                z-index: 1000; font-weight: 600; animation: slideIn 0.3s ease;
+            `;
+            successDiv.textContent = `✅ ${message}`;
+            document.body.appendChild(successDiv);
+            setTimeout(() => successDiv.remove(), 3000);
+        }
+
+        // Drag and drop for upload area
+        const uploadArea = document.querySelector('.upload-area');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#FF6B6B';
+            uploadArea.style.background = '#fff1f1';
+        });
+        
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#4ECDC4';
+            uploadArea.style.background = '#f8fafc';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#4ECDC4';
+            uploadArea.style.background = '#f8fafc';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                const event = { target: { files: [files[0]] } };
+                handleFileUpload(event);
+            }
+        });
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+
+            @media (max-width: 768px) {
+                .mode-selector > div {
+                    flex-direction: column !important;
+                }
+                
+                .mode-selector .mode-btn {
+                    border-radius: 8px !important;
+                    margin: 2px 0 !important;
+                }
+                
+                #camera-mode button {
+                    display: block !important;
+                    margin: 5px auto !important;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

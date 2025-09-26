@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link Shortener - SujanTech Developer Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.15);
+            overflow: hidden;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="70" cy="20" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(0) translateY(0); }
+            100% { transform: translateX(-100px) translateY(-100px); }
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .main-tool {
+            background: linear-gradient(145deg, #f8fafc 0%, #ffffff 100%);
+            border-radius: 20px;
+            padding: 40px;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .main-tool:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+
+        .tool-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .tool-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .url-input-container {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 20px 25px;
+            border: 3px solid #e1e8ed;
+            border-radius: 16px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+
+        .url-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .custom-alias-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .domain-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            min-width: 140px;
+            text-align: center;
+        }
+
+        .alias-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 3px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .alias-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            transition: left 0.3s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: #64748b;
+            border: 2px solid #cbd5e1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(145deg, #e2e8f0 0%, #cbd5e1 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+        }
+
+        .result-container {
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+            border: 2px solid #86efac;
+            border-radius: 16px;
+            padding: 30px;
+            display: none;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-container::before {
+            content: '🔗';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 4rem;
+            opacity: 0.1;
+        }
+
+        .result-title {
+            color: #166534;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+        }
+
+        .shortened-url {
+            background: rgba(255,255,255,0.8);
+            border: 2px solid #86efac;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 18px;
+            font-weight: 600;
+            color: #166534;
+            text-align: center;
+            margin-bottom: 20px;
+            word-break: break-all;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .shortened-url:hover {
+            background: rgba(255,255,255,0.95);
+            transform: scale(1.02);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .qr-container {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 12px;
+        }
+
+        .qr-code {
+            margin: 0 auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .statistics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fef59e 100%);
+            border: 2px solid #fbbf24;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-box::before {
+            content: '🔗';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 4rem;
+            opacity: 0.1;
+        }
+
+        .info-title {
+            color: #92400e;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+        }
+
+        .info-text {
+            color: #451a03;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .recent-links {
+            background: linear-gradient(145deg, #f1f5f9 0%, #ffffff 100%);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .recent-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .link-item {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .link-item:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .link-original {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .link-shortened {
+            color: #667eea;
+            font-weight: 600;
+            font-family: 'Monaco', monospace;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .link-shortened:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 20px;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+
+            .custom-alias-container {
+                flex-direction: column;
+            }
+
+            .domain-display {
+                min-width: 100%;
+            }
+
+            .alias-input {
+                min-width: 100%;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                justify-content: center;
+            }
+            
+            .back-btn {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin-bottom: 20px;
+                display: inline-block;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+        }
+
+        .toast {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            z-index: 1000;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(15px);
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            color: white;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="goBack()">← Back to Developer Tools</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🔗 Link Shortener</h1>
+            <p>Create short, memorable links with custom aliases and analytics</p>
+        </div>
+        
+        <div class="content">
+            <div class="info-box">
+                <div class="info-title">
+                    <span>💡</span>
+                    What is Link Shortening?
+                </div>
+                <div class="info-text">
+                    Link shortening creates compact, shareable URLs that redirect to your original long URLs. Perfect for social media, marketing campaigns, and tracking link performance with built-in analytics.
+                </div>
+            </div>
+
+            <div class="main-tool">
+                <div class="tool-title">
+                    <div class="tool-icon">📎</div>
+                    Shorten Your Link
+                </div>
+                
+                <div class="url-input-container">
+                    <input 
+                        type="url" 
+                        id="originalUrl" 
+                        class="url-input" 
+                        placeholder="Enter your long URL here... (https://example.com/very-long-url)"
+                        oninput="validateUrl()"
+                    />
+                </div>
+
+                <div class="custom-alias-container">
+                    <div class="domain-display">sujn.tk/</div>
+                    <input 
+                        type="text" 
+                        id="customAlias" 
+                        class="alias-input" 
+                        placeholder="custom-alias (optional)"
+                        maxlength="20"
+                        oninput="validateAlias()"
+                    />
+                </div>
+
+                <div class="controls">
+                    <button class="btn btn-primary" id="shortenBtn" onclick="shortenUrl()">
+                        <span>🔗</span>
+                        Shorten Link
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearForm()">
+                        <span>🗑️</span>
+                        Clear
+                    </button>
+                </div>
+
+                <div class="result-container" id="resultContainer">
+                    <div class="result-title">
+                        <span>✅</span>
+                        Your Shortened Link
+                    </div>
+                    
+                    <div class="shortened-url" id="shortenedUrl" onclick="copyLink()">
+                        <!-- Shortened URL will appear here -->
+                    </div>
+
+                    <div class="result-actions">
+                        <button class="btn btn-success" onclick="copyLink()">
+                            <span>📋</span>
+                            Copy Link
+                        </button>
+                        <button class="btn btn-secondary" onclick="generateQR()">
+                            <span>📱</span>
+                            Generate QR
+                        </button>
+                        <button class="btn btn-secondary" onclick="previewLink()">
+                            <span>👁️</span>
+                            Preview
+                        </button>
+                    </div>
+
+                    <div class="qr-container" id="qrContainer" style="display: none;">
+                        <canvas id="qrCode" class="qr-code"></canvas>
+                        <p style="margin-top: 10px; color: #166534; font-weight: 600;">Scan to open link</p>
+                    </div>
+                </div>
+
+                <div class="statistics" id="statistics">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalClicks">0</div>
+                        <div class="stat-label">Total Clicks</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="todayClicks">0</div>
+                        <div class="stat-label">Today's Clicks</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalLinks">0</div>
+                        <div class="stat-label">Links Created</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="activeLinks">0</div>
+                        <div class="stat-label">Active Links</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recent-links">
+                <div class="recent-title">
+                    <span>🕐</span>
+                    Recent Links
+                </div>
+                <div id="recentLinksContainer">
+                    <div class="link-item">
+                        <div class="link-original">https://example.com/very-long-url-that-needs-shortening</div>
+                        <div class="link-shortened" onclick="copyToClipboard('sujn.tk/demo1')">sujn.tk/demo1</div>
+                    </div>
+                    <div class="link-item">
+                        <div class="link-original">https://github.com/user/repository/issues/123</div>
+                        <div class="link-shortened" onclick="copyToClipboard('sujn.tk/gh-issue')">sujn.tk/gh-issue</div>
+                    </div>
+                    <div class="link-item">
+                        <div class="link-original">https://docs.google.com/document/d/very-long-document-id</div>
+                        <div class="link-shortened" onclick="copyToClipboard('sujn.tk/my-doc')">sujn.tk/my-doc</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // QR Code generation library (lightweight implementation)
+        function generateQRCode(text, canvas) {
+            const ctx = canvas.getContext('2d');
+            const size = 200;
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Simple QR code placeholder - in a real implementation, you'd use a proper QR library
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, size, size);
+            
+            ctx.fillStyle = '#fff';
+            const moduleSize = size / 25;
+            
+            // Create a simple pattern that looks like a QR code
+            for (let i = 0; i < 25; i++) {
+                for (let j = 0; j < 25; j++) {
+                    if ((i + j) % 3 === 0 || i % 4 === 0 || j % 4 === 0) {
+                        ctx.fillRect(i * moduleSize, j * moduleSize, moduleSize, moduleSize);
+                    }
+                }
+            }
+            
+            // Add positioning squares
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, 7 * moduleSize, 7 * moduleSize);
+            ctx.fillRect(18 * moduleSize, 0, 7 * moduleSize, 7 * moduleSize);
+            ctx.fillRect(0, 18 * moduleSize, 7 * moduleSize, 7 * moduleSize);
+            
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(moduleSize, moduleSize, 5 * moduleSize, 5 * moduleSize);
+            ctx.fillRect(19 * moduleSize, moduleSize, 5 * moduleSize, 5 * moduleSize);
+            ctx.fillRect(moduleSize, 19 * moduleSize, 5 * moduleSize, 5 * moduleSize);
+            
+            ctx.fillStyle = '#000';
+            ctx.fillRect(2 * moduleSize, 2 * moduleSize, 3 * moduleSize, 3 * moduleSize);
+            ctx.fillRect(20 * moduleSize, 2 * moduleSize, 3 * moduleSize, 3 * moduleSize);
+            ctx.fillRect(2 * moduleSize, 20 * moduleSize, 3 * moduleSize, 3 * moduleSize);
+        }
+
+        let linkDatabase = JSON.parse(localStorage.getItem('shortLinks')) || [];
+        let statistics = JSON.parse(localStorage.getItem('linkStats')) || {
+            totalClicks: 0,
+            todayClicks: 0,
+            totalLinks: 0,
+            activeLinks: 0
+        };
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        function validateUrl() {
+            const input = document.getElementById('originalUrl');
+            const url = input.value.trim();
+            const shortenBtn = document.getElementById('shortenBtn');
+            
+            if (url && isValidUrl(url)) {
+                input.style.borderColor = '#10b981';
+                shortenBtn.disabled = false;
+                shortenBtn.style.opacity = '1';
+            } else {
+                input.style.borderColor = url ? '#ef4444' : '#e1e8ed';
+                shortenBtn.disabled = url.length > 0;
+                shortenBtn.style.opacity = url && !isValidUrl(url) ? '0.5' : '1';
+            }
+        }
+
+        function validateAlias() {
+            const input = document.getElementById('customAlias');
+            const alias = input.value.trim();
+            
+            if (alias) {
+                // Check if alias already exists
+                const exists = linkDatabase.some(link => link.alias === alias);
+                if (exists) {
+                    input.style.borderColor = '#ef4444';
+                    showToast('Alias already exists!', 'error');
+                } else if (!/^[a-zA-Z0-9-_]+$/.test(alias)) {
+                    input.style.borderColor = '#ef4444';
+                } else {
+                    input.style.borderColor = '#10b981';
+                }
+            } else {
+                input.style.borderColor = '#e1e8ed';
+            }
+        }
+
+        function isValidUrl(url) {
+            try {
+                new URL(url);
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        function generateRandomAlias() {
+            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        function shortenUrl() {
+            const originalUrl = document.getElementById('originalUrl').value.trim();
+            const customAlias = document.getElementById('customAlias').value.trim();
+            const shortenBtn = document.getElementById('shortenBtn');
+            
+            if (!originalUrl) {
+                showToast('Please enter a URL to shorten!', 'error');
+                return;
+            }
+
+            if (!isValidUrl(originalUrl)) {
+                showToast('Please enter a valid URL!', 'error');
+                return;
+            }
+
+            // Show loading state
+            shortenBtn.innerHTML = '<div class="loading"></div> Shortening...';
+            shortenBtn.disabled = true;
+
+            // Simulate API call delay
+            setTimeout(() => {
+                const alias = customAlias || generateRandomAlias();
+                
+                // Check if alias already exists
+                if (linkDatabase.some(link => link.alias === alias)) {
+                    showToast('Alias already exists! Try another one.', 'error');
+                    shortenBtn.innerHTML = '<span>🔗</span> Shorten Link';
+                    shortenBtn.disabled = false;
+                    return;
+                }
+
+                const shortLink = {
+                    id: Date.now(),
+                    originalUrl: originalUrl,
+                    alias: alias,
+                    shortUrl: `sujn.tk/${alias}`,
+                    createdAt: new Date(),
+                    clicks: 0,
+                    lastClicked: null
+                };
+
+                linkDatabase.push(shortLink);
+                statistics.totalLinks++;
+                statistics.activeLinks++;
+                
+                saveToStorage();
+                displayResult(shortLink);
+                updateStatistics();
+                addToRecentLinks(shortLink);
+                
+                shortenBtn.innerHTML = '<span>🔗</span> Shorten Link';
+                shortenBtn.disabled = false;
+                
+                showToast('Link shortened successfully!', 'success');
+            }, 1500);
+        }
+
+        function displayResult(shortLink) {
+            const resultContainer = document.getElementById('resultContainer');
+            const shortenedUrl = document.getElementById('shortenedUrl');
+            
+            shortenedUrl.textContent = shortLink.shortUrl;
+            shortenedUrl.dataset.url = shortLink.shortUrl;
+            
+            resultContainer.style.display = 'block';
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function clearForm() {
+            document.getElementById('originalUrl').value = '';
+            document.getElementById('customAlias').value = '';
+            document.getElementById('resultContainer').style.display = 'none';
+            document.getElementById('qrContainer').style.display = 'none';
+            
+            // Reset input styles
+            document.getElementById('originalUrl').style.borderColor = '#e1e8ed';
+            document.getElementById('customAlias').style.borderColor = '#e1e8ed';
+        }
+
+        function copyLink() {
+            const shortenedUrl = document.getElementById('shortenedUrl');
+            const url = shortenedUrl.textContent;
+            
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('Link copied to clipboard!', 'success');
+                shortenedUrl.style.background = 'rgba(16, 185, 129, 0.1)';
+                setTimeout(() => {
+                    shortenedUrl.style.background = 'rgba(255,255,255,0.8)';
+                }, 1000);
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('Link copied to clipboard!', 'success');
+            });
+        }
+
+        function generateQR() {
+            const qrContainer = document.getElementById('qrContainer');
+            const canvas = document.getElementById('qrCode');
+            const url = document.getElementById('shortenedUrl').textContent;
+            
+            generateQRCode(url, canvas);
+            qrContainer.style.display = 'block';
+            qrContainer.scrollIntoView({ behavior: 'smooth' });
+            
+            showToast('QR code generated!', 'success');
+        }
+
+        function previewLink() {
+            const shortenedUrl = document.getElementById('shortenedUrl').textContent;
+            const alias = shortenedUrl.split('/')[1];
+            const link = linkDatabase.find(l => l.alias === alias);
+            
+            if (link) {
+                window.open(link.originalUrl, '_blank');
+                
+                // Simulate click tracking
+                link.clicks++;
+                link.lastClicked = new Date();
+                statistics.totalClicks++;
+                
+                const today = new Date().toDateString();
+                const lastClickDate = new Date(link.lastClicked).toDateString();
+                if (today === lastClickDate) {
+                    statistics.todayClicks++;
+                }
+                
+                saveToStorage();
+                updateStatistics();
+            }
+        }
+
+        function copyToClipboard(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('Link copied!', 'success');
+            });
+        }
+
+        function addToRecentLinks(shortLink) {
+            const container = document.getElementById('recentLinksContainer');
+            
+            const linkItem = document.createElement('div');
+            linkItem.className = 'link-item';
+            linkItem.innerHTML = `
+                <div class="link-original">${shortLink.originalUrl}</div>
+                <div class="link-shortened" onclick="copyToClipboard('${shortLink.shortUrl}')">${shortLink.shortUrl}</div>
+            `;
+            
+            container.insertBefore(linkItem, container.firstChild);
+            
+            // Keep only the last 5 links
+            while (container.children.length > 5) {
+                container.removeChild(container.lastChild);
+            }
+        }
+
+        function updateStatistics() {
+            document.getElementById('totalClicks').textContent = statistics.totalClicks.toLocaleString();
+            document.getElementById('todayClicks').textContent = statistics.todayClicks.toLocaleString();
+            document.getElementById('totalLinks').textContent = statistics.totalLinks.toLocaleString();
+            document.getElementById('activeLinks').textContent = statistics.activeLinks.toLocaleString();
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('shortLinks', JSON.stringify(linkDatabase));
+            localStorage.setItem('linkStats', JSON.stringify(statistics));
+        }
+
+        function showToast(message, type) {
+            // Remove existing toast
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            // Create new toast
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100px)';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 400);
+            }, 3000);
+        }
+
+        // Initialize the page
+        updateStatistics();
+        
+        // Load recent links from storage
+        const recentLinks = linkDatabase.slice(-3).reverse();
+        if (recentLinks.length > 0) {
+            const container = document.getElementById('recentLinksContainer');
+            container.innerHTML = '';
+            recentLinks.forEach(link => {
+                const linkItem = document.createElement('div');
+                linkItem.className = 'link-item';
+                linkItem.innerHTML = `
+                    <div class="link-original">${link.originalUrl}</div>
+                    <div class="link-shortened" onclick="copyToClipboard('${link.shortUrl}')">${link.shortUrl}</div>
+                `;
+                container.appendChild(linkItem);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+HOW TO ADD YOUR PHOTO TO THE HEADER:
+
+1. Save your photo in the project folder (C:\Users\sujan\Desktop\sujantech)
+2. Rename it to "sujan-photo.jpg" (or keep the current name and update the HTML)
+3. Make sure the photo is:
+   - Good quality
+   - Square aspect ratio (1:1) works best
+   - Not too large (under 1MB recommended)
+   - JPG, PNG, or WEBP format
+
+CURRENT STATUS:
+✅ Header HTML updated with photo placeholder
+✅ CSS styling added for circular profile photo
+✅ Responsive design implemented
+✅ Hover effects added
+✅ Professional border and shadow styling
+
+The photo will appear as:
+- 50px diameter circle on desktop
+- 42px on tablet
+- 38px on mobile
+- Blue border that changes to orange on hover
+- Subtle shadow and scale effects
+
+If you want to change the photo later, just replace the "sujan-photo.jpg" file with a new one using the same name.

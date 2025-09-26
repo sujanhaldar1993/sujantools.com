@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Encoder/Decoder - SujanTech Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .tool-section {
+            margin-bottom: 40px;
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 30px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .textarea-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 20px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+
+        .textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .char-count {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            font-size: 0.8rem;
+            color: #666;
+            background: rgba(255,255,255,0.9);
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .file-upload {
+            display: none;
+        }
+
+        .file-drop {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .file-drop:hover {
+            border-color: #667eea;
+            background: #f8fafc;
+        }
+
+        .file-drop.dragover {
+            border-color: #667eea;
+            background: #eff6ff;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-title {
+            color: #1e40af;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-text {
+            color: #1e3a8a;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            transition: background 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .example {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .example:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+
+        .example-title {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 5px;
+        }
+
+        .example-text {
+            font-size: 0.85rem;
+            color: #6b7280;
+            font-family: monospace;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                justify-content: center;
+            }
+            
+            .back-btn {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin-bottom: 20px;
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="goBack()">← Back to Developer Tools</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Base64 Encoder/Decoder</h1>
+            <p>Encode and decode Base64 strings with file support</p>
+        </div>
+        
+        <div class="content">
+            <div class="info-box">
+                <div class="info-title">
+                    <span>ℹ️</span>
+                    What is Base64?
+                </div>
+                <div class="info-text">
+                    Base64 is a binary-to-text encoding scheme that represents binary data in an ASCII string format. It's commonly used to encode data that needs to be stored and transferred over media designed to deal with text, such as email attachments, URLs, and JSON data.
+                </div>
+            </div>
+
+            <!-- Encode Section -->
+            <div class="tool-section">
+                <div class="section-title">
+                    <span>📝</span>
+                    Encode to Base64
+                </div>
+                
+                <div class="textarea-container">
+                    <textarea 
+                        id="encodeInput" 
+                        class="textarea" 
+                        placeholder="Enter text to encode to Base64..."
+                        oninput="updateCharCount('encode')"
+                    ></textarea>
+                    <div class="char-count" id="encodeCharCount">0 characters</div>
+                </div>
+
+                <div class="file-drop" id="encodeFileDrop" ondrop="handleFileDrop(event, 'encode')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">📁</div>
+                    <p style="margin: 0; color: #64748b;">Drop a file here or <span style="color: #667eea; cursor: pointer;" onclick="document.getElementById('encodeFileInput').click()">click to browse</span></p>
+                    <input type="file" id="encodeFileInput" class="file-upload" onchange="handleFileSelect(event, 'encode')">
+                </div>
+
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="encodeBase64()">
+                        <span>🔒</span>
+                        Encode
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearInput('encode')">
+                        <span>🗑️</span>
+                        Clear
+                    </button>
+                    <button class="btn btn-success" onclick="copyResult('encodeOutput')">
+                        <span>📋</span>
+                        Copy Result
+                    </button>
+                </div>
+
+                <div class="textarea-container">
+                    <textarea 
+                        id="encodeOutput" 
+                        class="textarea" 
+                        placeholder="Base64 encoded result will appear here..."
+                        readonly
+                    ></textarea>
+                </div>
+
+                <div class="examples">
+                    <div class="example" onclick="loadExample('encode', 'Hello World!')">
+                        <div class="example-title">Text Example</div>
+                        <div class="example-text">Hello World!</div>
+                    </div>
+                    <div class="example" onclick="loadExample('encode', 'SujanTech Developer Tools 🚀')">
+                        <div class="example-title">Unicode Example</div>
+                        <div class="example-text">SujanTech Developer Tools 🚀</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decode Section -->
+            <div class="tool-section">
+                <div class="section-title">
+                    <span>🔓</span>
+                    Decode from Base64
+                </div>
+                
+                <div class="textarea-container">
+                    <textarea 
+                        id="decodeInput" 
+                        class="textarea" 
+                        placeholder="Enter Base64 string to decode..."
+                        oninput="updateCharCount('decode')"
+                    ></textarea>
+                    <div class="char-count" id="decodeCharCount">0 characters</div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="decodeBase64()">
+                        <span>🔓</span>
+                        Decode
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearInput('decode')">
+                        <span>🗑️</span>
+                        Clear
+                    </button>
+                    <button class="btn btn-success" onclick="copyResult('decodeOutput')">
+                        <span>📋</span>
+                        Copy Result
+                    </button>
+                    <button class="btn btn-secondary" onclick="downloadResult()">
+                        <span>💾</span>
+                        Download
+                    </button>
+                </div>
+
+                <div class="textarea-container">
+                    <textarea 
+                        id="decodeOutput" 
+                        class="textarea" 
+                        placeholder="Decoded result will appear here..."
+                        readonly
+                    ></textarea>
+                </div>
+
+                <div class="examples">
+                    <div class="example" onclick="loadExample('decode', 'SGVsbG8gV29ybGQh')">
+                        <div class="example-title">Decode Example</div>
+                        <div class="example-text">SGVsbG8gV29ybGQh</div>
+                    </div>
+                    <div class="example" onclick="loadExample('decode', 'U3VqYW5UZWNoIERldmVsb3BlciBUb29scyDwn5qA')">
+                        <div class="example-title">Unicode Decode</div>
+                        <div class="example-text">U3VqYW5UZWNoIERldmVsb3BlciBUb29scyDwn5qA</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        function updateCharCount(type) {
+            const input = document.getElementById(type + 'Input');
+            const counter = document.getElementById(type + 'CharCount');
+            const count = input.value.length;
+            counter.textContent = `${count} characters`;
+        }
+
+        function encodeBase64() {
+            const input = document.getElementById('encodeInput').value;
+            const output = document.getElementById('encodeOutput');
+            
+            if (!input.trim()) {
+                alert('Please enter text to encode!');
+                return;
+            }
+
+            try {
+                const encoded = btoa(unescape(encodeURIComponent(input)));
+                output.value = encoded;
+                
+                // Add success feedback
+                showFeedback('Text encoded successfully!', 'success');
+            } catch (error) {
+                alert('Error encoding text: ' + error.message);
+            }
+        }
+
+        function decodeBase64() {
+            const input = document.getElementById('decodeInput').value.trim();
+            const output = document.getElementById('decodeOutput');
+            
+            if (!input) {
+                alert('Please enter Base64 string to decode!');
+                return;
+            }
+
+            try {
+                const decoded = decodeURIComponent(escape(atob(input)));
+                output.value = decoded;
+                
+                // Add success feedback
+                showFeedback('Base64 decoded successfully!', 'success');
+            } catch (error) {
+                alert('Error decoding Base64: Invalid Base64 string');
+            }
+        }
+
+        function clearInput(type) {
+            document.getElementById(type + 'Input').value = '';
+            document.getElementById(type + 'Output').value = '';
+            updateCharCount(type);
+        }
+
+        function copyResult(outputId) {
+            const output = document.getElementById(outputId);
+            if (!output.value) {
+                alert('No result to copy!');
+                return;
+            }
+
+            output.select();
+            document.execCommand('copy');
+            showFeedback('Copied to clipboard!', 'success');
+        }
+
+        function downloadResult() {
+            const result = document.getElementById('decodeOutput').value;
+            if (!result) {
+                alert('No result to download!');
+                return;
+            }
+
+            const blob = new Blob([result], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'decoded_result.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function loadExample(type, text) {
+            document.getElementById(type + 'Input').value = text;
+            updateCharCount(type);
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(event) {
+            event.currentTarget.classList.remove('dragover');
+        }
+
+        function handleFileDrop(event, type) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('dragover');
+            
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    document.getElementById(type + 'Input').value = e.target.result;
+                    updateCharCount(type);
+                };
+                
+                reader.readAsText(file);
+            }
+        }
+
+        function handleFileSelect(event, type) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    document.getElementById(type + 'Input').value = e.target.result;
+                    updateCharCount(type);
+                };
+                
+                reader.readAsText(file);
+            }
+        }
+
+        function showFeedback(message, type) {
+            // Create feedback element
+            const feedback = document.createElement('div');
+            feedback.textContent = message;
+            feedback.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-weight: 600;
+                z-index: 1000;
+                transition: all 0.3s ease;
+                ${type === 'success' ? 'background: #10b981; color: white;' : 'background: #ef4444; color: white;'}
+            `;
+            
+            document.body.appendChild(feedback);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                feedback.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(feedback);
+                }, 300);
+            }, 3000);
+        }
+
+        // Initialize character counters
+        updateCharCount('encode');
+        updateCharCount('decode');
+    </script>
+</body>
+</html>
